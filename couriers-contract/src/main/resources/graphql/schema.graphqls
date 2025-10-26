@@ -1,0 +1,75 @@
+type User {
+    id: ID!
+    email: String
+    phone: String
+    name: String
+}
+
+type Courier {
+    id: ID!
+    name: String
+    phone: String
+    deliveryMethod: String
+    status: String
+    latitude: Float
+    longitude: Float
+}
+
+type Order {
+    id: ID!
+    user: User
+    courier: Courier
+    senderAddress: String
+    recipientAddress: String
+    status: String
+    price: Float
+    createdAt: String
+    updatedAt: String
+}
+
+type CourierPage {
+    content: [Courier]
+    number: Int
+    size: Int
+    totalElements: Int
+    totalPages: Int
+}
+
+
+type Query {
+    userById(id: ID!): User
+    orderById(id: ID!): Order
+    courierById(id: ID!): Courier
+    allCouriers(page: Int = 0, size: Int = 10): CourierPage
+}
+
+
+input CreateUserInput {
+    email: String!
+    phone: String!
+    name: String!
+}
+
+input CreateOrderInput {
+    userId: ID!
+    senderAddress: String!
+    recipientAddress: String!
+    price: Float!
+}
+
+input UpdateCourierStatusInput {
+    status: String!
+}
+
+input UpdateCourierLocationInput {
+    latitude: Float!
+    longitude: Float!
+}
+
+
+type Mutation {
+    createUser(input: CreateUserInput!): User
+    createOrder(input: CreateOrderInput!): Order
+    updateCourierStatus(id: ID!, input: UpdateCourierStatusInput!): Courier
+    updateCourierLocation(id: ID!, input: UpdateCourierLocationInput!): Courier
+}

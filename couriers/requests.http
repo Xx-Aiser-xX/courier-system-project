@@ -1,0 +1,26 @@
+
+### 1 новый пользователь
+POST http://localhost:8080/api/users
+Content-Type: application/json
+
+{
+  "email": "test1@mail.com",
+  "phone": "71231231211",
+  "name": "тест1"
+}
+
+> {%
+    client.global.set("userId", response.body.id);
+%}
+
+
+### 2 новый заказ
+POST http://localhost:8080/api/orders
+Content-Type: application/json
+
+{
+  "userId": "{{userId}}",
+  "senderAddress": "Москва, ул. Пушкина, д. 1",
+  "recipientAddress": "Москва, ул. Лермонтова, д. 10",
+  "price": 550.75
+}
