@@ -1,21 +1,20 @@
 package edu.rutmiit.demo.auditservice.config;
 
-import org.springframework.amqp.support.converter.SimpleMessageConverter;
+import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.util.List;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Configuration
 public class RabbitMQConfig {
 
+
     @Bean
-    public SimpleMessageConverter messageConverter() {
-        SimpleMessageConverter converter = new SimpleMessageConverter();
-        converter.setAllowedListPatterns(List.of(
-                "edu.rutmiit.demo.events.*",
-                "java.util.*",
-                "java.math.*"));
-        return converter;
+    public ObjectMapper objectMapper() {
+        return new ObjectMapper().findAndRegisterModules();
     }
-}
+
+    @Bean
+    public Jackson2JsonMessageConverter messageConverter(ObjectMapper objectMapper) {
+        return new Jackson2JsonMessageConverter(objectMapper);
+    }}

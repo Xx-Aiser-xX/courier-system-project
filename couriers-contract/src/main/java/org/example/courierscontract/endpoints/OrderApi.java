@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Tag(name = "API Заказов", description = "Взаимодействие с заказами")
@@ -49,4 +50,12 @@ public interface OrderApi {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     void deleteOrder(@PathVariable UUID id);
+
+    @GetMapping("/calculate")
+    @Operation(summary = "получение стоимости заказа")
+    BigDecimal checkPrice(
+            @RequestParam String from,
+            @RequestParam String to,
+            @RequestParam double weight,
+            @RequestParam(required = false) UUID userId);
 }

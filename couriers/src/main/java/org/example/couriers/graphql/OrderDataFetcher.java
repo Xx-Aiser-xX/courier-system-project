@@ -36,7 +36,6 @@ public class OrderDataFetcher {
 
     @DgsMutation
     public OrderResponse createOrder(@InputArgument("input") Map<String, Object> input) {
-        // Создаем урезанный запрос
         CreateOrderRequest request = new CreateOrderRequest(
                 UUID.fromString((String) input.get("userId")),
                 (String) input.get("senderAddress"),

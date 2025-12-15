@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+option java_multiple_files = true;
+option java_package = "org.example.grpc";
+option java_outer_classname = "PricingServiceProto";
+
+service PricingService {
+  rpc CalculatePrice(CalculatePriceRequest) returns (CalculatePriceResponse) {}
+}
+
+message CalculatePriceRequest {
+  string sender_address = 1;
+  string recipient_address = 2;
+  double weight = 3;
+}
+
+message CalculatePriceResponse {
+  double price = 1;
+  string currency = 2;
+}
