@@ -1,35 +1,63 @@
 pipeline {
     agent any
 
-    environment {
-        MAVEN_OPTS = "-Dmaven.repo.local=.m2/repository"
+    tools {
+        maven 'Maven3'
+        jdk 'Java21'
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out...'
+                echo 'Забираем код из GitHub...'
             }
         }
 
-        stage('Build & Test') {
+        stage('Build Contracts (Libs)') {
             steps {
-                sh '''
-                docker run --rm -v "$PWD":/usr/src/mymaven -v "$PWD/.m2":/root/.m2 -w /usr/src/mymaven maven:3.9-eclipse-temurin-21 mvn clean package -DskipTests
-                '''
+                echo '--- Сборка библиотек ---'
+                sh 'mvn -B -f events-contract/pom.xml clean install'
+                sh 'mvn -B -f couriers-contract/pom.xml clean install'
+                sh 'mvn -B -f grpc-contract/pom.xml clean install'
+            }
+        }
+
+        stage('Build & Test Services') {
+            parallel {
+                stage('Couriers Core') {
+                    steps {
+                        sh 'mvn -B -f couriers/pom.xml clean package -DskipTests'
+                    }
+                }
+                stage('Audit Service') {
+                    steps {
+                        sh 'mvn -B -f audit-service/pom.xml clean package -DskipTests'
+                    }
+                }
+                stage('Notification Service') {
+                    steps {
+                        sh 'mvn -B -f notification-service/pom.xml clean package -DskipTests'
+                    }
+                }
+                stage('Pricing Service') {
+                    steps {
+                        sh 'mvn -B -f pricing-service/pom.xml clean package -DskipTests'
+                    }
+                }
+                stage('Statistics Service') {
+                    steps {
+                        sh 'mvn -B -f statistics-service/pom.xml clean package -DskipTests'
+                    }
+                }
             }
         }
 
         stage('Build Docker Images') {
-            steps {
-                sh 'docker-compose build'
-            }
-        }
-
-        stage('Deploy') {
-            steps {
-                sh 'docker-compose up -d'
-            }
+             steps {
+                 echo 'Сборка Docker образов...'
+                 sh 'docker --version'
+                 sh 'docker compose build'
+             }
         }
     }
 }
