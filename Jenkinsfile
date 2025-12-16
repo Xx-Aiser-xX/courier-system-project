@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    environment {
+        DOCKER_API_VERSION = "1.43"
+    }
+
     tools {
         maven 'Maven3'
         jdk 'Java21'
