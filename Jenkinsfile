@@ -9,17 +9,8 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo '--- Скачивание кода из GitHub ---'
+                echo '--- Скачивание кода ---'
                 git branch: 'master', url: 'https://github.com/Xx-Aiser-xX/courier-system-project.git'
-            }
-        }
-
-        stage('Debug Info') {
-            steps {
-                script {
-                    echo '--- Проверка наличия файлов ---'
-                    sh 'ls -la'
-                }
             }
         }
 
@@ -54,9 +45,26 @@ pipeline {
 
         stage('Deploy (CD)') {
              steps {
-                 echo '--- Деплой на сервер ---'
+                 echo '--- Деплой (Запуск контейнеров) ---'
                  script {
-                     sh 'docker compose up -d'
+                     echo '1. Удаляем старые конфликтующие контейнеры...'
+                     sh 'docker rm -f zipkin rabbitmq prometheus grafana postgres pricing-service couriers audit-service notification-service statistics-service || true'
+
+                     echo '2. Запускаем сервисы (без jenkins)...'
+                     sh '''
+                        docker compose up -d \
+                        rabbitmq \
+                        zipkin \
+                        prometheus \
+                        grafana \
+                        postgres \
+                        pricing-service \
+                        couriers \
+                        audit-service \
+                        notification-service \
+                        statistics-service
+                     '''
+
                      sh 'docker image prune -f'
                  }
              }
