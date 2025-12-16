@@ -60,7 +60,7 @@ pipeline {
                  script {
                      sh 'docker --version'
 
-                     sh 'docker compose -f docker-compose.yaml build'
+                     sh 'docker compose -f docker-compose.yml build'
                  }
              }
         }

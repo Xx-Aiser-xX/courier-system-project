@@ -141,7 +141,7 @@ services:
       - app-network
 
   jenkins:
-    image: jenkins/jenkins:lts-jdk17
+    build: ./jenkins
     container_name: jenkins
     user: root
     ports:
