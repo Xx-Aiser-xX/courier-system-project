@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="couriers" />
+        <module name="statistics-service" />
+        <module name="audit-service" />
+        <module name="grpc-contract" />
+        <module name="couriers-contract" />
+        <module name="events-contract" />
+        <module name="notification-service" />
+        <module name="pricing-service" />
+      </profile>
+    </annotationProcessing>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="audit-service" options="-parameters" />
+      <module name="couriers" options="-parameters" />
+      <module name="couriers-contract" options="-parameters" />
+      <module name="notification-service" options="-parameters" />
+      <module name="pricing-service" options="-parameters" />
+      <module name="statistics-service" options="-parameters" />
+    </option>
+  </component>
+</project>
