@@ -9,25 +9,24 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Забираем код из GitHub...'
+                echo '--- Клонирование репозитория из GitHub ---'
+                git branch: 'master', url: 'https://github.com/Xx-Aiser-xX/courier-system-project.git'
             }
         }
 
         stage('Debug: File System') {
             steps {
                 script {
-                    echo '--- Список папок в корне проекта ---'
+                    echo '--- Проверка содержимого папки после клонирования ---'
                     sh 'ls -la'
-
-                    echo '--- Проверка наличия папки notification-service ---'
-                    sh 'ls -la notification-service || echo "!!! ВНИМАНИЕ: Папка notification-service НЕ НАЙДЕНА !!!"'
+                    sh 'test -f pricing-service/pom.xml && echo "Pricing Service POM found" || echo "Pricing Service POM NOT found"'
                 }
             }
         }
 
         stage('Build Contracts (Libs)') {
             steps {
-                echo '--- Сборка общих библиотек ---'
+                echo '--- Сборка общих библиотек (install) ---'
                 sh 'mvn -B -f events-contract/pom.xml clean install'
                 sh 'mvn -B -f couriers-contract/pom.xml clean install'
                 sh 'mvn -B -f grpc-contract/pom.xml clean install'
@@ -36,7 +35,7 @@ pipeline {
 
         stage('Build Services (Sequential)') {
             steps {
-                echo '--- Сборка микросервисов ---'
+                echo '--- Сборка JAR файлов микросервисов ---'
 
                 echo 'Building Pricing Service...'
                 sh 'mvn -B -f pricing-service/pom.xml clean package -DskipTests'
@@ -57,9 +56,12 @@ pipeline {
 
         stage('Build Docker Images') {
              steps {
-                 echo 'Сборка Docker образов...'
-                 sh 'docker --version'
-                 sh 'docker compose build'
+                 echo '--- Сборка Docker образов ---'
+                 script {
+                     sh 'docker --version'
+
+                     sh 'docker compose -f docker-compose.yaml build'
+                 }
              }
         }
     }
