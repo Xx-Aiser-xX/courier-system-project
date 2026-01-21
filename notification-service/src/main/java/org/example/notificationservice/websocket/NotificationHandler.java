@@ -25,9 +25,10 @@ public class NotificationHandler extends TextWebSocketHandler {
 
         if (userId != null) {
             sessions.put(userId, session);
-            log.info("Пользователь {} подключился. Сессия: {}", userId, session.getId());
-        } else {
-            log.warn("Подключение без userId! Сессия: {}", session.getId());
+            log.info("пользователь {} подключился, сессия: {}", userId, session.getId());
+        }
+        else {
+            log.warn("подключение без userId, сессия: {}", session.getId());
             try {
                 session.close(CloseStatus.BAD_DATA);
             } catch (IOException e) {
@@ -40,7 +41,7 @@ public class NotificationHandler extends TextWebSocketHandler {
         String userId = getUserIdFromSession(session);
         if (userId != null) {
             sessions.remove(userId);
-            log.info("Пользователь {} отключился.", userId);
+            log.info("пользователь {} отключился", userId);
         }
     }
 
@@ -50,29 +51,30 @@ public class NotificationHandler extends TextWebSocketHandler {
         if (session != null && session.isOpen()) {
             try {
                 session.sendMessage(new TextMessage(message));
-                log.info("Сообщение отправлено пользователю {}", userId);
+                log.info("сообщение отправлено пользователю {}", userId);
             } catch (IOException e) {
-                log.error("Ошибка отправки сообщения пользователю {}", userId, e);
+                log.error("ошибка отправки сообщения пользователю {}", userId, e);
             }
-        } else {
-            log.warn("Пользователь {} не в сети, сообщение пропущено.", userId);
+        }
+        else {
+            log.warn("пользователь {} не в сети, сообщение пропущено", userId);
         }
     }
 
     private String getUserIdFromSession(WebSocketSession session) {
         try {
             URI uri = session.getUri();
-            if (uri == null || uri.getQuery() == null) return null;
+            if (uri == null || uri.getQuery() == null)
+                return null;
 
             String query = uri.getQuery();
             for (String param : query.split("&")) {
                 String[] pair = param.split("=");
-                if (pair.length > 1 && "userId".equals(pair[0])) {
+                if (pair.length > 1 && "userId".equals(pair[0]))
                     return pair[1];
-                }
             }
         } catch (Exception e) {
-            log.error("Ошибка парсинга URL", e);
+            log.error("ошибка парсинга URL", e);
         }
         return null;
     }

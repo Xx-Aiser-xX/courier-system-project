@@ -5,5 +5,4 @@ import java.util.UUID;
 
 public record OrderDeletedEvent(
         UUID orderId
-) implements Serializable {
-}
+) { }

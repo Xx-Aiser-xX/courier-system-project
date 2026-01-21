@@ -1,7 +1,7 @@
 package org.example.couriers.entitys;
 
 import jakarta.persistence.*;
-import org.example.couriers.exception.IncorrectDataException;
+import org.example.courierscontract.exception.IncorrectDataException;
 
 import java.time.LocalDateTime;
 
@@ -50,7 +50,7 @@ public class Notification extends BaseEntity {
 
     public void setMessage(String message) {
         if (message == null || message.trim().isEmpty()) {
-            throw new IncorrectDataException("Notification message cannot be empty.");
+            throw new IncorrectDataException("Уведомление не может быть пустым");
         }
         this.message = message;
     }

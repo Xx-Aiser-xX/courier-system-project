@@ -8,4 +8,4 @@ public record OrderStatusChangedEvent(
         UUID userId,
         String newStatus,
         String message
-) implements Serializable {}
+){}

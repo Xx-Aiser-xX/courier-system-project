@@ -1,11 +1,11 @@
 
 ### 1 новый пользователь
-POST http://localhost:8080/api/users
+POST http://localhost:8089/api/users
 Content-Type: application/json
 
 {
-  "email": "testtt11111111111@mail.com",
-  "phone": "71231231666",
+  "email": "testtt1111111111111111@mail.com",
+  "phone": "71236666666",
   "name": "тест!!11"
 }
 
@@ -15,14 +15,14 @@ Content-Type: application/json
 
 
 ### 2 новый заказ
-POST http://localhost:8080/api/orders
+POST http://localhost:8089/api/orders
 Content-Type: application/json
 
 {
-  "userId": "{{userId}}",
+  "userId": "270c44e5-07cf-41f4-8d43-22d0cf6da9fd",
   "senderAddress": "Москва, ул. Пушкина, д. 1",
-  "recipientAddress": "Москва, ул. Лермонтова, д. 10",
-  "price": 551.75
+  "recipientAddress": "MARS, ул. Лермонтова, д. 10",
+  "weight": 2.5
 }
 > {%
     client.global.set("orderId", response.body.id);
@@ -30,25 +30,8 @@ Content-Type: application/json
 
 ### 3 удаление
 
-DELETE http://localhost:8080/api/orders/{{orderId}}
+DELETE http://localhost:8089/api/orders/{{orderId}}
 
-### ПРОВЕРКА gRPC: Расчет стоимости доставки (Успешный сценарий)
-# Логика: 100р (база) + (6 букв + 5 букв)*2.5 + 2.0кг*50 = 100 + 27.5 + 100 = 227.5
-GET http://localhost:8080/api/orders/calculate?from=Moscow&to=Minsk&weight=2.0
+### расчёт стоимости
+GET http://localhost:8089/api/orders/calculate?from=Moscow&to=Minsk&weight=2.0
 Accept: application/json
-
-### ПРОВЕРКА gRPC: Ошибка (Тест на "Mars")
-# Должен вернуться 500 (Internal Server Error) с сообщением про "Delivery to Mars is not supported"
-GET http://localhost:8080/api/orders/calculate?from=Earth&to=Mars&weight=1.0
-Accept: application/json
-
-### Новый заказ (Запуск симуляции WebSocket)
-POST http://localhost:8080/api/orders
-Content-Type: application/json
-
-{
-  "userId": "7ae5aa2c-4140-4a8a-ad02-cc2fd2bb22a7",
-  "senderAddress": "Москва, Кремль",
-  "recipientAddress": "Москва, Арбат",
-  "price": 1000.00
-}

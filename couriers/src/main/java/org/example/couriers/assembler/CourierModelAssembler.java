@@ -14,7 +14,7 @@ public class CourierModelAssembler implements RepresentationModelAssembler<Couri
     @Override
     public EntityModel<CourierResponse> toModel(CourierResponse courier) {
         return EntityModel.of(courier,
-                linkTo(methodOn(CourierController.class).getCourierById(courier.getId())).withSelfRel(),
-                linkTo(methodOn(CourierController.class).getAllCouriers(0, 10, null)).withRel("couriers"));
+                linkTo(methodOn(CourierController.class).getCourierById(courier.getId())).withSelfRel()
+        );
     }
 }

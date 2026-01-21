@@ -8,6 +8,7 @@ import org.example.couriers.repo.UserRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
+import java.util.UUID;
 
 @Repository
 public class UserRepositoryImpl extends BaseRepository<User> implements UserRepository {
@@ -19,11 +20,12 @@ public class UserRepositoryImpl extends BaseRepository<User> implements UserRepo
     }
 
     @Override
-    public Optional<User> findByEmailOrPhone(String email, String phone) {
+    public Optional<User> findByIdOrEmailOrPhone(UUID id, String email, String phone) {
         try {
             return Optional.of(em.createQuery(
                     "SELECT u FROM User u " +
-                            "WHERE u.phone = :phone or u.email = :email", User.class)
+                            "WHERE u.id = :id or u.phone = :phone or u.email = :email", User.class)
+                    .setParameter("id", id)
                     .setParameter("phone", phone)
                     .setParameter("email", email)
                     .getSingleResult());

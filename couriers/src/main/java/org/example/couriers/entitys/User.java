@@ -1,18 +1,22 @@
 package org.example.couriers.entitys;
 
 import jakarta.persistence.*;
-import org.example.couriers.exception.IncorrectDataException;
+import org.example.courierscontract.exception.IncorrectDataException;
 
-import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
 @Entity
 @Table(name = "users")
 @Inheritance(strategy = InheritanceType.JOINED)
-public class User extends BaseEntity {
+public class User {
+    private UUID id;
     private String email;
     private String phone;
     private String name;
-    private List<Order> orders;
-    private List<Notification> notifications;
+    private boolean deleted;
+    private Set<Order> orders;
+    private Set<Notification> notifications;
 
 
     protected User() {
@@ -22,6 +26,17 @@ public class User extends BaseEntity {
         setEmail(email);
         setPhone(phone);
         setName(name);
+        setDeleted(false);
+    }
+
+    @Id
+    @Column(name = "id", updatable = false, nullable = false)
+    public UUID getId() {
+        return id;
+    }
+
+    public void setId(UUID id) {
+        this.id = id;
     }
 
     @Column(name = "email", nullable = false, unique = true)
@@ -31,7 +46,7 @@ public class User extends BaseEntity {
 
     public void setEmail(String email) {
         if (email == null || !email.matches("^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$")) {
-            throw new IncorrectDataException("Invalid email format: " + email);
+            throw new IncorrectDataException("некорректный формат почты: " + email);
         }
         this.email = email;
     }
@@ -43,7 +58,7 @@ public class User extends BaseEntity {
 
     public void setPhone(String phone) {
         if (phone == null || !phone.matches("^\\d{11}$")) {
-            throw new IncorrectDataException("Invalid phone format (must be 11 digits): " + phone);
+            throw new IncorrectDataException("неверный формат телефона,должен быть 11 символов: " + phone);
         }
         this.phone = phone;
     }
@@ -55,26 +70,34 @@ public class User extends BaseEntity {
 
     public void setName(String name) {
         if (name == null || name.trim().isEmpty() || name.length() > 100) {
-            throw new IncorrectDataException("Name cannot be empty or longer than 100 characters.");
+            throw new IncorrectDataException("имя не должно быть пустым или длиннее 100 символов");
         }
         this.name = name;
     }
 
+    @Column(name = "is_deleted", nullable = false)
+    public boolean isDeleted() {
+        return deleted;
+    }
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
+
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    public List<Order> getOrders() {
+    public Set<Order> getOrders() {
         return orders;
     }
 
-    public void setOrders(List<Order> orders) {
+    public void setOrders(Set<Order> orders) {
         this.orders = orders;
     }
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
-    public List<Notification> getNotifications() {
+    public Set<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(List<Notification> notifications) {
+    public void setNotifications(Set<Notification> notifications) {
         this.notifications = notifications;
     }
 }

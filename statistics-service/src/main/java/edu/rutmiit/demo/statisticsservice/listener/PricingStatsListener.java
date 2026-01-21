@@ -16,8 +16,7 @@ public class PricingStatsListener {
             exchange = @Exchange(name = "pricing-fanout", type = "fanout")
     ))
     public void handlePriceEvent(PriceCalculatedEvent event) {
-        log.info("STATISTICS: +1 запрос. Направление: [{} -> {}]. Цена: {}",
-                event.fromAddress(), event.toAddress(), event.price());
+        log.info("+1 запрос, откуда: {}, куда: {}, цена: {}", event.fromAddress(), event.toAddress(), event.price());
         // какая-то логика
     }
 }

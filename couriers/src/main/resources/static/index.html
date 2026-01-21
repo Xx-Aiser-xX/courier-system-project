@@ -2,203 +2,33 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Курьерский Сервис - Трекинг</title>
+    <title>Вход в систему</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        :root {
-            --primary-color: #4a90e2;
-            --success-color: #2ecc71;
-            --warning-color: #f1c40f;
-            --bg-color: #f5f7fa;
-            --card-bg: #ffffff;
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            margin: 0;
-            padding: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        h1 { color: #333; margin-bottom: 20px; }
-
-        .login-panel {
-            background: var(--card-bg);
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            width: 100%;
-            max-width: 500px;
-        }
-
-        input {
-            flex-grow: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            font-size: 16px;
-        }
-
-        button {
-            padding: 10px 20px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background 0.2s;
-        }
-
-        button:hover { background-color: #357abd; }
-
-        #status {
-            font-weight: bold;
-            margin-bottom: 20px;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            background: #e0e0e0;
-            color: #666;
-        }
-
-        #orders {
-            width: 100%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            border-left: 5px solid #ccc;
-            opacity: 0;
-            transform: translateY(-20px);
-            animation: slideIn 0.5s forwards;
-        }
-
-        @keyframes slideIn {
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 8px;
-            font-size: 0.9em;
-            color: #888;
-        }
-
-        .card-body {
-            font-size: 1.1em;
-            color: #333;
-        }
-
-        .status-CREATED { border-left-color: var(--primary-color); }
-        .status-CREATED .status-badge { color: var(--primary-color); font-weight: bold; }
-
-        .status-IN_TRANSIT { border-left-color: var(--warning-color); }
-        .status-IN_TRANSIT .status-badge { color: #d4ac0d; font-weight: bold; }
-
-        .status-DELIVERED { border-left-color: var(--success-color); }
-        .status-DELIVERED .status-badge { color: var(--success-color); font-weight: bold; }
-
+        body { background-color: #f8f9fa; }
+        .login-card { width: 100%; max-width: 400px; padding: 20px; border-radius: 10px; background: white; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
     </style>
 </head>
 <body>
-
-<h1>📦 Мои Заказы</h1>
-
-<div class="login-panel">
-    <input type="text" id="userIdInput" placeholder="Введите ваш User ID (UUID)">
-    <button onclick="connect()">Войти</button>
-</div>
-
-<div id="status">🔴 Отключено</div>
-
-<div id="orders">
-</div>
-
-<script>
-    let socket;
-
-    function connect() {
-        const userId = document.getElementById('userIdInput').value.trim();
-        if (!userId) {
-            alert("Пожалуйста, введите User ID!");
-            return;
-        }
-
-        if (socket) {
-            socket.close();
-        }
-
-        socket = new WebSocket(`ws://localhost:8083/ws/orders?userId=${userId}`);
-
-        const statusDiv = document.getElementById('status');
-        const ordersDiv = document.getElementById('orders');
-
-        socket.onopen = () => {
-            statusDiv.innerText = `🟢 Онлайн: ${userId.substring(0, 8)}...`;
-            statusDiv.style.background = "#d4edda";
-            statusDiv.style.color = "#155724";
-            ordersDiv.innerHTML = "";
-        };
-
-        socket.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            console.log("Пришло:", data);
-
-            const div = document.createElement('div');
-
-            let statusClass = 'status-DEFAULT';
-            let statusText = 'Обновление';
-
-            if (data.type === 'ORDER_CREATED') {
-                statusClass = 'status-CREATED';
-                statusText = 'Создан';
-            } else if (data.newStatus === 'IN_TRANSIT') {
-                statusClass = 'status-IN_TRANSIT';
-                statusText = 'В пути';
-            } else if (data.newStatus === 'DELIVERED') {
-                statusClass = 'status-DELIVERED';
-                statusText = 'Доставлен';
-            }
-
-            div.className = `card ${statusClass}`;
-            div.innerHTML = `
-                    <div class="card-header">
-                        <span>Заказ #${data.orderId.substring(0, 8)}</span>
-                        <span class="status-badge">${statusText}</span>
-                    </div>
-                    <div class="card-body">
-                        ${data.text}
-                    </div>
-                `;
-
-            ordersDiv.prepend(div);
-        };
-
-        socket.onclose = () => {
-            statusDiv.innerText = "🔴 Соединение разорвано";
-            statusDiv.style.background = "#f8d7da";
-            statusDiv.style.color = "#721c24";
-        };
-
-        socket.onerror = (error) => {
-            console.error("Ошибка WebSocket:", error);
-        };
-    }
-</script>
+    <div id="mainHeader"></div>
+    <div class="container d-flex flex-column align-items-center justify-content-center" style="min-height: 80vh;">
+        <div class="login-card">
+            <h3 class="text-center mb-4">Вход</h3>
+            <div class="mb-3">
+                <label>Логин (Email)</label>
+                <input type="text" id="username" class="form-control" placeholder="user@mail.ru">
+            </div>
+            <div class="mb-3">
+                <label>Пароль</label>
+                <input type="password" id="password" class="form-control" placeholder="***">
+            </div>
+            <button onclick="handleLogin()" class="btn btn-primary w-100 mb-3">Войти</button>
+            <div class="text-center">
+                <a href="register.html" class="text-decoration-none">Нет аккаунта? Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+    <script src="js/auth.js"></script>
+    <script src="js/login.js"></script>
 </body>
 </html>

@@ -17,26 +17,11 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.UUID;
 
-@Tag(name = "API Пользователей", description = "Взаимодействие с пользователями")
+@Tag(name = "API пользователей", description = "взаимодействие с пользователями")
 @RequestMapping("/api/users")
 public interface UserApi {
 
-    @Operation(summary = "Создание нового пользователя")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Пользователь успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации или пользователь с таким email/телефоном уже существует",
-                    content = @Content(schema = @Schema(implementation = StatusResponse.class)))
-    })
-    @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    ResponseEntity<EntityModel<UserResponse>> createUser(@Valid @RequestBody CreateUserRequest request);
-
-    @Operation(summary = "Получение пользователя по ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Пользователь найден"),
-            @ApiResponse(responseCode = "404", description = "Пользователь не найден",
-                    content = @Content(schema = @Schema(implementation = StatusResponse.class)))
-    })
+    @Operation(summary = "получение пользователя по ID")
     @GetMapping("/{id}")
     EntityModel<UserResponse> getUserById(@PathVariable UUID id);
 }

@@ -24,7 +24,7 @@ up:
 
 down:
 	@echo "--- Stopping Docker Environment ---"
-	docker-compose down
+	docker compose down --rmi local
 
 restart: down build up
 

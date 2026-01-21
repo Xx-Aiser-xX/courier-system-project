@@ -16,7 +16,7 @@ public class PricingEventListener {
     ))
     public void handlePriceEvent(PriceCalculatedEvent event) {
         String userStr = (event.userId() != null) ? event.userId().toString() : "Anonymous";
-        log.info("AUDIT: Расчет цены для {}. Маршрут: {} -> {}. Сумма: {} {}",
+        log.info("расчет цены, маршрут: {} -> {}, сумма: {} {}",
                 userStr, event.fromAddress(), event.toAddress(), event.price(), event.currency());
     }
 }

@@ -79,7 +79,7 @@ public abstract class BaseRepository<Entity> {
         try {
             return em.merge(entity);
         } catch (Exception e) {
-            throw new RuntimeException("Could not save entity: " + e.getMessage(), e);
+            throw new RuntimeException("не удалось сохранить запись: " + e.getMessage(), e);
         }
     }
 }

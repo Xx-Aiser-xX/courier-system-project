@@ -4,6 +4,7 @@ import com.netflix.graphql.dgs.*;
 import graphql.schema.DataFetchingEnvironment;
 import org.example.couriers.service.CourierService;
 import org.example.couriers.service.OrderService;
+import org.example.couriers.service.SecurityService;
 import org.example.couriers.service.UserService;
 import org.example.courierscontract.dto.request.CreateOrderRequest;
 import org.example.courierscontract.dto.response.CourierResponse;
@@ -21,12 +22,15 @@ public class OrderDataFetcher {
     private final OrderService orderService;
     private final UserService userService;
     private final CourierService courierService;
+    private final SecurityService securityService;
+
 
     @Autowired
-    public OrderDataFetcher(OrderService orderService, UserService userService, CourierService courierService) {
+    public OrderDataFetcher(OrderService orderService, UserService userService, CourierService courierService, SecurityService securityService) {
         this.orderService = orderService;
         this.userService = userService;
         this.courierService = courierService;
+        this.securityService = securityService;
     }
 
     @DgsQuery
@@ -36,13 +40,13 @@ public class OrderDataFetcher {
 
     @DgsMutation
     public OrderResponse createOrder(@InputArgument("input") Map<String, Object> input) {
+        UUID userId = securityService.getCurrentUserId();
         CreateOrderRequest request = new CreateOrderRequest(
-                UUID.fromString((String) input.get("userId")),
                 (String) input.get("senderAddress"),
                 (String) input.get("recipientAddress"),
-                BigDecimal.valueOf(((Number) input.get("price")).doubleValue())
+                ((Number) input.get("weight")).doubleValue()
         );
-        return orderService.createOrder(request);
+        return orderService.createOrder(userId, request);
     }
 
     @DgsData(parentType = "Order", field = "user")

@@ -2,9 +2,9 @@ package org.example.couriers.entitys;
 
 import jakarta.persistence.*;
 import org.example.couriers.entitys.enums.CourierStatus;
-import org.example.couriers.exception.IncorrectDataException;
+import org.example.courierscontract.exception.IncorrectDataException;
 
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "couriers")
@@ -15,7 +15,7 @@ public class Courier extends User {
     private CourierStatus status;
     private Double latitude;
     private Double longitude;
-    private List<Order> assignedOrders;
+    private Set<Order> assignedOrders;
 
     protected Courier() {
         super();
@@ -34,7 +34,7 @@ public class Courier extends User {
 
     public void setDeliveryMethod(String deliveryMethod) {
         if (deliveryMethod == null || deliveryMethod.trim().isEmpty()) {
-            throw new IncorrectDataException("Delivery method cannot be empty.");
+            throw new IncorrectDataException("способ доставки не может быть пустым");
         }
         this.deliveryMethod = deliveryMethod;
     }
@@ -47,7 +47,7 @@ public class Courier extends User {
 
     public void setStatus(CourierStatus status) {
         if (status == null) {
-            throw new IncorrectDataException("Courier status cannot be null.");
+            throw new IncorrectDataException("статус курьера не может быть пустым");
         }
         this.status = status;
     }
@@ -59,7 +59,7 @@ public class Courier extends User {
 
     public void setLatitude(Double latitude) {
         if (latitude != null && (latitude < -90 || latitude > 90)) {
-            throw new IncorrectDataException("Latitude must be between -90 and 90.");
+            throw new IncorrectDataException("широта должна быть от -90 до 90");
         }
         this.latitude = latitude;
     }
@@ -71,17 +71,16 @@ public class Courier extends User {
 
     public void setLongitude(Double longitude) {
         if (longitude != null && (longitude < -180 || longitude > 180)) {
-            throw new IncorrectDataException("Longitude must be between -180 and 180.");
+            throw new IncorrectDataException("долгота должна быть от -180 до 180");
         }
         this.longitude = longitude;
     }
 
     @OneToMany(mappedBy = "courier", fetch = FetchType.LAZY)
-    public List<Order> getAssignedOrders() {
+    public Set<Order> getAssignedOrders() {
         return assignedOrders;
     }
-
-    public void setAssignedOrders(List<Order> assignedOrders) {
+    public void setAssignedOrders(Set<Order> assignedOrders) {
         this.assignedOrders = assignedOrders;
     }
 }

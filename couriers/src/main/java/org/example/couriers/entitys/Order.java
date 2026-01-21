@@ -2,11 +2,11 @@ package org.example.couriers.entitys;
 
 import jakarta.persistence.*;
 import org.example.couriers.entitys.enums.OrderStatus;
-import org.example.couriers.exception.IncorrectDataException;
+import org.example.courierscontract.exception.IncorrectDataException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "orders")
@@ -20,7 +20,7 @@ public class Order extends BaseEntity {
     private BigDecimal price;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private List<Notification> notifications;
+    private Set<Notification> notifications;
 
     protected Order() {}
 
@@ -42,7 +42,7 @@ public class Order extends BaseEntity {
 
     public void setUser(User user) {
         if (user == null) {
-            throw new IncorrectDataException("User cannot be null for an order.");
+            throw new IncorrectDataException("пользователь не может быть null");
         }
         this.user = user;
     }
@@ -64,7 +64,7 @@ public class Order extends BaseEntity {
 
     public void setSenderAddress(String senderAddress) {
         if (senderAddress == null || senderAddress.trim().isEmpty()) {
-            throw new IncorrectDataException("Sender address cannot be empty.");
+            throw new IncorrectDataException("адрес отправителя не может быть пустым");
         }
         this.senderAddress = senderAddress;
     }
@@ -76,7 +76,7 @@ public class Order extends BaseEntity {
 
     public void setRecipientAddress(String recipientAddress) {
         if (recipientAddress == null || recipientAddress.trim().isEmpty()) {
-            throw new IncorrectDataException("Recipient address cannot be empty.");
+            throw new IncorrectDataException("адрес получателя не может быть пустым");
         }
         this.recipientAddress = recipientAddress;
     }
@@ -89,7 +89,7 @@ public class Order extends BaseEntity {
 
     public void setStatus(OrderStatus status) {
         if (status == null) {
-            throw new IncorrectDataException("Order status cannot be null.");
+            throw new IncorrectDataException("статус заказа не может быть пустым");
         }
         this.status = status;
     }
@@ -101,7 +101,7 @@ public class Order extends BaseEntity {
 
     public void setPrice(BigDecimal price) {
         if (price == null || price.compareTo(BigDecimal.ZERO) < 0) {
-            throw new IncorrectDataException("Price cannot be null or negative.");
+            throw new IncorrectDataException("цена не может быть не положительной");
         }
         this.price = price;
     }
@@ -125,11 +125,11 @@ public class Order extends BaseEntity {
     }
 
     @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    public List<Notification> getNotifications() {
+    public Set<Notification> getNotifications() {
         return notifications;
     }
 
-    public void setNotifications(List<Notification> notifications) {
+    public void setNotifications(Set<Notification> notifications) {
         this.notifications = notifications;
     }
 

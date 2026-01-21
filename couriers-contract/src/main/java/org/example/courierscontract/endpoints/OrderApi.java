@@ -19,43 +19,26 @@ import org.springframework.web.bind.annotation.*;
 import java.math.BigDecimal;
 import java.util.UUID;
 
-@Tag(name = "API Заказов", description = "Взаимодействие с заказами")
+@Tag(name = "API заказов", description = "взаимодействие с заказами")
 @RequestMapping("/api/orders")
 public interface OrderApi {
 
-    @Operation(summary = "Создание нового заказа")
-    @ApiResponses({
-            @ApiResponse(responseCode = "201", description = "Заказ успешно создан"),
-            @ApiResponse(responseCode = "400", description = "Ошибка валидации данных",
-                    content = @Content(schema = @Schema(implementation = StatusResponse.class)))
-    })
+    @Operation(summary = "создание нового заказа")
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     ResponseEntity<EntityModel<OrderResponse>> createOrder(@Valid @RequestBody CreateOrderRequest request);
 
-    @Operation(summary = "Получение заказа по ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "200", description = "Заказ найден"),
-            @ApiResponse(responseCode = "404", description = "Заказ не найден",
-                    content = @Content(schema = @Schema(implementation = StatusResponse.class)))
-    })
+    @Operation(summary = "получение заказа по ID")
     @GetMapping("/{id}")
     EntityModel<OrderResponse> getOrderById(@PathVariable UUID id);
 
-    @Operation(summary = "Удаление заказа по ID")
-    @ApiResponses({
-            @ApiResponse(responseCode = "204", description = "Заказ успешно удален"),
-            @ApiResponse(responseCode = "404", description = "Заказ не найден")
-    })
+    @Operation(summary = "удаление заказа по ID")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    void deleteOrder(@PathVariable UUID id);
+    ResponseEntity<Void> deleteOrder(@PathVariable UUID id);
 
     @GetMapping("/calculate")
     @Operation(summary = "получение стоимости заказа")
-    BigDecimal checkPrice(
-            @RequestParam String from,
-            @RequestParam String to,
-            @RequestParam double weight,
-            @RequestParam(required = false) UUID userId);
+    BigDecimal checkPrice(@RequestParam String from, @RequestParam String to,
+            @RequestParam double weight, @RequestParam(required = false) UUID userId);
 }

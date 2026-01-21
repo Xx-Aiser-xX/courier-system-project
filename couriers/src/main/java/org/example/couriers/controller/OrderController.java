@@ -3,6 +3,7 @@ package org.example.couriers.controller;
 import org.example.couriers.assembler.OrderModelAssembler;
 import org.example.couriers.service.DeliveryPriceService;
 import org.example.couriers.service.OrderService;
+import org.example.couriers.service.SecurityService;
 import org.example.courierscontract.dto.request.CreateOrderRequest;
 import org.example.courierscontract.dto.response.OrderResponse;
 import org.example.courierscontract.endpoints.OrderApi;
@@ -18,18 +19,21 @@ import java.util.UUID;
 public class OrderController implements OrderApi {
 
     private final OrderService orderService;
+    private final SecurityService securityService;
     private final OrderModelAssembler orderAssembler;
     private final DeliveryPriceService deliveryPriceService;
 
-    public OrderController(OrderService orderService, OrderModelAssembler orderAssembler, DeliveryPriceService deliveryPriceService) {
+    public OrderController(OrderService orderService, SecurityService securityService, OrderModelAssembler orderAssembler, DeliveryPriceService deliveryPriceService) {
         this.orderService = orderService;
+        this.securityService = securityService;
         this.orderAssembler = orderAssembler;
         this.deliveryPriceService = deliveryPriceService;
     }
 
     @Override
     public ResponseEntity<EntityModel<OrderResponse>> createOrder(CreateOrderRequest request) {
-        OrderResponse orderResponse = orderService.createOrder(request);
+        UUID userId = securityService.getCurrentUserId();
+        OrderResponse orderResponse = orderService.createOrder(userId, request);
         EntityModel<OrderResponse> entityModel = orderAssembler.toModel(orderResponse);
 
         return ResponseEntity
@@ -44,16 +48,13 @@ public class OrderController implements OrderApi {
     }
 
     @Override
-    public void deleteOrder(UUID id) {
+    public ResponseEntity<Void> deleteOrder(UUID id) {
         orderService.deleteOrder(id);
+        return ResponseEntity.noContent().build();
     }
 
     @Override
-    public BigDecimal checkPrice(
-            @RequestParam String from,
-            @RequestParam String to,
-            @RequestParam double weight,
-            @RequestParam(required = false) UUID userId) {
+    public BigDecimal checkPrice(String from, String to, double weight, UUID userId) {
         return deliveryPriceService.calculateDeliveryPrice(from, to, weight, userId);
     }
 }

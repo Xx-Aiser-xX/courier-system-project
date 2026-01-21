@@ -5,6 +5,7 @@ import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.DgsQuery;
 import com.netflix.graphql.dgs.InputArgument;
 import org.example.couriers.service.CourierService;
+import org.example.couriers.service.SecurityService;
 import org.example.courierscontract.dto.request.UpdateCourierLocationRequest;
 import org.example.courierscontract.dto.request.UpdateCourierStatusRequest;
 import org.example.courierscontract.dto.response.CourierResponse;
@@ -18,10 +19,12 @@ import java.util.UUID;
 public class CourierDataFetcher {
 
     private final CourierService courierService;
+    private final SecurityService securityService;
 
     @Autowired
-    public CourierDataFetcher(CourierService courierService) {
+    public CourierDataFetcher(CourierService courierService, SecurityService securityService) {
         this.courierService = courierService;
+        this.securityService = securityService;
     }
 
     @DgsQuery
@@ -44,5 +47,26 @@ public class CourierDataFetcher {
     public CourierResponse updateCourierLocation(@InputArgument String id, @InputArgument("input") Map<String, Double> input) {
         UpdateCourierLocationRequest request = new UpdateCourierLocationRequest(input.get("latitude"), input.get("longitude"));
         return courierService.updateCourierLocation(UUID.fromString(id), request);
+    }
+
+    @DgsMutation
+    public Boolean acceptOrder(@InputArgument String orderId) {
+        UUID courierId = securityService.getCurrentUserId();
+        courierService.acceptOrder(courierId, UUID.fromString(orderId));
+        return true;
+    }
+
+    @DgsMutation
+    public Boolean declineOrder(@InputArgument String orderId) {
+        UUID courierId = securityService.getCurrentUserId();
+        courierService.declineOrder(courierId, UUID.fromString(orderId));
+        return true;
+    }
+
+    @DgsMutation
+    public Boolean changeDeliveryStatus(@InputArgument String orderId, @InputArgument String newStatus) {
+        UUID courierId = securityService.getCurrentUserId();
+        courierService.changeDeliveryStatus(courierId, UUID.fromString(orderId), newStatus);
+        return true;
     }
 }

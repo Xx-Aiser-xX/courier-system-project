@@ -46,15 +46,23 @@ type Query {
 
 input CreateUserInput {
     email: String!
+    password: String!
     phone: String!
     name: String!
 }
 
+input CreateCourierInput {
+    email: String!
+    password: String!
+    phone: String!
+    name: String!
+    deliveryMethod: String!
+}
+
 input CreateOrderInput {
-    userId: ID!
     senderAddress: String!
     recipientAddress: String!
-    price: Float!
+    weight: Float!
 }
 
 input UpdateCourierStatusInput {
@@ -68,8 +76,12 @@ input UpdateCourierLocationInput {
 
 
 type Mutation {
-    createUser(input: CreateUserInput!): User
+    registerUser(input: CreateUserInput!): User
+    registerCourier(input: CreateCourierInput!): Courier
     createOrder(input: CreateOrderInput!): Order
     updateCourierStatus(id: ID!, input: UpdateCourierStatusInput!): Courier
     updateCourierLocation(id: ID!, input: UpdateCourierLocationInput!): Courier
+    acceptOrder(orderId: ID!): Boolean
+    declineOrder(orderId: ID!): Boolean
+    changeDeliveryStatus(orderId: ID!, newStatus: String!): Boolean
 }

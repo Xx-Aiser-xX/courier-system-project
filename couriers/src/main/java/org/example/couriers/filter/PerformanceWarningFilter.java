@@ -30,7 +30,7 @@ public class PerformanceWarningFilter implements Filter {
             HttpServletRequest request = (HttpServletRequest) servletRequest;
 
             if (duration > WARN_THRESHOLD_MS) {
-                log.warn("Slow request detected: {} {} took {}ms",
+                log.warn("запрос занял много времени: {} {} занял {}ms",
                         request.getMethod(),
                         request.getRequestURI(),
                         duration);

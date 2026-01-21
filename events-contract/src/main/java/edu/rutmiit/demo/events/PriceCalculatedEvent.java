@@ -10,5 +10,4 @@ public record PriceCalculatedEvent(
         String currency,
         String fromAddress,
         String toAddress
-) implements Serializable {
-}
+){}
