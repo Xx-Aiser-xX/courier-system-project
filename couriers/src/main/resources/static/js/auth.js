@@ -1,39 +1,38 @@
 const API_BASE = 'http://localhost:8089/api';
-const KEYCLOAK_URL = 'http://localhost:8180/realms/courier-realm/protocol/openid-connect/token';
 const CLIENT_ID = 'courier-app';
 
 async function login(username, password) {
-    const params = new URLSearchParams();
-    params.append('grant_type', 'password');
-    params.append('client_id', CLIENT_ID);
-    params.append('username', username);
-    params.append('password', password);
-
+    const loginRequest = {
+        email: username,
+        password: password
+    };
     try {
-        const response = await fetch(KEYCLOAK_URL, {
+        const response = await fetch(`${API_BASE}/auth/login`, {
             method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: params
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(loginRequest)
         });
 
-        const data = await response.json();
-        if (data.access_token) {
-            localStorage.setItem('access_token', data.access_token);
-            const payload = JSON.parse(atob(data.access_token.split('.')[1]));
-            localStorage.setItem('user_id', payload.sub);
+        if (response.ok) {
+            const data = await response.json();
+            if (data.access_token) {
+                localStorage.setItem('access_token', data.access_token);
+                const payload = JSON.parse(atob(data.access_token.split('.')[1]));
+                localStorage.setItem('user_id', payload.sub);
 
-            const roles = payload.realm_access?.roles || [];
-            if (roles.includes('COURIER')) {
-                window.location.href = 'courier.html';
-            } else {
-                window.location.href = 'user.html';
+                const roles = payload.realm_access?.roles || [];
+                if (roles.includes('COURIER')) {
+                    window.location.href = 'courier.html';
+                } else {
+                    window.location.href = 'user.html';
+                }
             }
         } else {
-            alert('Ошибка входа!');
+            alert('Ошибка входа! Проверьте логин и пароль.');
         }
     } catch (e) {
         console.error(e);
-        alert('Ошибка соединения с Keycloak');
+        alert('Ошибка соединения с сервером');
     }
 }
 

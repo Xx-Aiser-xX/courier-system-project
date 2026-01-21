@@ -1,10 +1,12 @@
 package org.example.couriers.controller;
 
+import org.example.couriers.service.AuthService;
 import org.example.couriers.service.CourierService;
 import org.example.couriers.service.KeycloakAdminService;
 import org.example.couriers.service.UserService;
 import org.example.courierscontract.dto.request.CreateCourierRequest;
 import org.example.courierscontract.dto.request.CreateUserRequest;
+import org.example.courierscontract.dto.request.LoginRequest;
 import org.example.courierscontract.endpoints.AuthApi;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,11 +19,13 @@ public class AuthController implements AuthApi {
     private final KeycloakAdminService keycloakAdminService;
     private final UserService userService;
     private final CourierService courierService;
+    private final AuthService authService;
 
-    public AuthController(KeycloakAdminService keycloakAdminService, UserService userService, CourierService courierService) {
+    public AuthController(KeycloakAdminService keycloakAdminService, UserService userService, CourierService courierService, AuthService authService) {
         this.keycloakAdminService = keycloakAdminService;
         this.userService = userService;
         this.courierService = courierService;
+        this.authService = authService;
     }
 
     public ResponseEntity<?> registerUser(CreateUserRequest request) {
@@ -38,5 +42,11 @@ public class AuthController implements AuthApi {
 
         courierService.registerCourier(keycloakId, request);
         return ResponseEntity.ok("курьер зарегистрирован, ID: " + keycloakId);
+    }
+
+    @Override
+    public ResponseEntity<?> login(LoginRequest request) {
+        Object tokenResponse = authService.performLogin(request.email(), request.password());
+        return ResponseEntity.ok(tokenResponse);
     }
 }

@@ -31,6 +31,7 @@ public class AppSecurityConfiguration {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**").permitAll()
                         .requestMatchers("/api/auth/register/**").permitAll()
+                        .requestMatchers("/api/auth/login").permitAll()
                         .requestMatchers("/api/orders/calculate").permitAll()
                         .requestMatchers(HttpMethod.GET, "/api").permitAll()
                         .requestMatchers("/graphiql/**", "/graphql/**").permitAll()

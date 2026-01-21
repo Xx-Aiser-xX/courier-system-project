@@ -39,13 +39,8 @@ public class OrderDataFetcher {
     }
 
     @DgsMutation
-    public OrderResponse createOrder(@InputArgument("input") Map<String, Object> input) {
+    public OrderResponse createOrder(@InputArgument("input") CreateOrderRequest request) {
         UUID userId = securityService.getCurrentUserId();
-        CreateOrderRequest request = new CreateOrderRequest(
-                (String) input.get("senderAddress"),
-                (String) input.get("recipientAddress"),
-                ((Number) input.get("weight")).doubleValue()
-        );
         return orderService.createOrder(userId, request);
     }
 

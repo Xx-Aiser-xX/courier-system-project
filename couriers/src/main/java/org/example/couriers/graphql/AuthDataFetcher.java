@@ -4,12 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.graphql.dgs.DgsComponent;
 import com.netflix.graphql.dgs.DgsMutation;
 import com.netflix.graphql.dgs.InputArgument;
+import org.example.couriers.service.AuthService;
 import org.example.couriers.service.CourierService;
 import org.example.couriers.service.KeycloakAdminService;
 import org.example.couriers.service.UserService;
 import org.example.courierscontract.dto.request.CreateCourierRequest;
 import org.example.courierscontract.dto.request.CreateUserRequest;
+import org.example.courierscontract.dto.request.LoginRequest;
 import org.example.courierscontract.dto.response.CourierResponse;
+import org.example.courierscontract.dto.response.LoginPayload;
 import org.example.courierscontract.dto.response.UserResponse;
 
 import java.util.Map;
@@ -21,15 +24,17 @@ public class AuthDataFetcher {
     private final KeycloakAdminService keycloakAdminService;
     private final UserService userService;
     private final CourierService courierService;
+    private final AuthService authService;
     private final ObjectMapper objectMapper;
 
     public AuthDataFetcher(KeycloakAdminService keycloakAdminService,
                            UserService userService,
-                           CourierService courierService,
+                           CourierService courierService, AuthService authService,
                            ObjectMapper objectMapper) {
         this.keycloakAdminService = keycloakAdminService;
         this.userService = userService;
         this.courierService = courierService;
+        this.authService = authService;
         this.objectMapper = objectMapper;
     }
 
@@ -47,5 +52,11 @@ public class AuthDataFetcher {
         UUID keycloakId = keycloakAdminService.registerUserInKeycloak(
                 request.email(), request.password(),"COURIER");
         return courierService.registerCourier(keycloakId, request);
+    }
+
+    @DgsMutation
+    public LoginPayload login(@InputArgument("input") LoginRequest request) {
+        Object rawResponse = authService.performLogin(request.email(), request.password());
+        return objectMapper.convertValue(rawResponse, LoginPayload.class);
     }
 }

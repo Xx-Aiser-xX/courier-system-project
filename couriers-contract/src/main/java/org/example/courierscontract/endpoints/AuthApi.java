@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.example.courierscontract.dto.request.CreateCourierRequest;
 import org.example.courierscontract.dto.request.CreateUserRequest;
+import org.example.courierscontract.dto.request.LoginRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -21,4 +22,8 @@ public interface AuthApi {
     @Operation(summary = "регистрация нового курьера")
     @PostMapping("/register/courier")
     ResponseEntity<?> registerCourier(@RequestBody CreateCourierRequest request);
+
+    @Operation(summary = "вход в систему (получение токена)")
+    @PostMapping("/login")
+    ResponseEntity<?> login(@RequestBody LoginRequest request);
 }

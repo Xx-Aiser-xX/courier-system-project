@@ -24,15 +24,15 @@ public class OrderModelAssembler implements RepresentationModelAssembler<OrderRe
         if (order.getCourierId() != null)
             orderModel.add(linkTo(methodOn(CourierController.class).getCourierById(order.getCourierId())).withRel("courier"));
 
-        String status = order.getStatus();
+        OrderStatus orderStatus = OrderStatus.valueOf(order.getStatus());
 
-        if (OrderStatus.SEARCHING == OrderStatus.valueOf(status)) {
+        if (OrderStatus.SEARCHING == orderStatus) {
             orderModel.add(linkTo(methodOn(CourierController.class).acceptOrder(order.getId())).withRel("accept"));
             orderModel.add(linkTo(methodOn(CourierController.class).declineOrder(order.getId())).withRel("decline"));
         }
-        else if (OrderStatus.ASSIGNED == OrderStatus.valueOf(status) || OrderStatus.IN_TRANSIT == OrderStatus.valueOf(status))
+        else if (OrderStatus.ASSIGNED == orderStatus || OrderStatus.IN_TRANSIT == orderStatus)
             orderModel.add(linkTo(methodOn(CourierController.class).changeDeliveryStatus(order.getId(), null)).withRel("changeStatus"));
-        else if (OrderStatus.DELIVERED != OrderStatus.valueOf(status) && OrderStatus.CANCELLED != OrderStatus.valueOf(status))
+        else if (OrderStatus.DELIVERED != orderStatus && OrderStatus.CANCELLED != orderStatus)
             orderModel.add(linkTo(methodOn(OrderController.class).deleteOrder(order.getId())).withRel("cancel"));
 
         return orderModel;
